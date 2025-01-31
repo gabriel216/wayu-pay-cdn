@@ -1,35 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const checkoutPage = window.location.href.includes("/checkouts");
+    if (window.location.pathname.includes("/checkouts/")) {
+        const checkoutContainer = document.querySelector("form[action='/cart']") || document.body;
+        
+        if (checkoutContainer) {
+            const paymentButton = document.createElement("button");
+            paymentButton.innerText = "Pagar con mi App";
+            paymentButton.classList.add("custom-payment-button");
 
-  if (checkoutPage) {
-      const paymentButton = document.createElement("button");
-      paymentButton.innerText = "Pagar con mi App";
-      paymentButton.style.background = "#FF5733";
-      paymentButton.style.color = "#fff";
-      paymentButton.style.padding = "10px 15px";
-      paymentButton.style.border = "none";
-      paymentButton.style.borderRadius = "5px";
-      paymentButton.style.fontSize = "16px";
-      paymentButton.style.cursor = "pointer";
-      paymentButton.style.marginTop = "10px";
+            paymentButton.addEventListener("click", function () {
+                const total = document.body.innerText.match(/\$\d+\.\d+/g)?.pop();
+                console.log("Total a pagar:", total);
+                
+                window.location.href = `https://tu-app.com/payment?total=${total}`;
+            });
 
-      paymentButton.addEventListener("click", function () {
-          // Aquí debes construir la URL de tu app con los productos y total
-          const orderDetails = JSON.stringify({
-              items: [
-                  { name: "Producto 1", price: 1000 },
-                  { name: "Producto 2", price: 2000 }
-              ],
-              total: 3000
-          });
-
-          window.location.href = `https://wayu-app.myshopify.com/payment?data=${encodeURIComponent(orderDetails)}`;
-      });
-
-      // Insertar el botón en la página del checkout
-      const checkoutContainer = document.querySelector(".content-box");
-      if (checkoutContainer) {
-          checkoutContainer.appendChild(paymentButton);
-      }
-  }
+            checkoutContainer.appendChild(paymentButton);
+        }
+    }
 });
