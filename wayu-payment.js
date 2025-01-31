@@ -7,7 +7,7 @@ function waitForElement(selector, callback) {
     }
 }
 
-if (window.location.pathname.includes("/checkouts")) {
+if (window.location.pathname.includes("/cart")) {
     waitForElement("#checkout", function (checkoutButton) {
         if (!document.querySelector(".custom-payment-button")) {
             const paymentButton = document.createElement("button");
@@ -26,45 +26,28 @@ if (window.location.pathname.includes("/checkouts")) {
             paymentButton.style.width = "100%";
             paymentButton.style.marginTop = "10px";
 
-            // Evento de click para obtener los datos del carrito
             paymentButton.addEventListener("click", function () {
-                const subtotalElement = document.querySelector(".totals__total-value"); // Normalmente es el subtotal
-                const taxElement = document.querySelector(".tax-note"); // Ajusta el selector si no es correcto
-                const shippingElement = document.querySelector(".totals__shipping-value"); // Ajusta el selector si no es correcto
-
-                const subtotal = subtotalElement ? subtotalElement.innerText.replace(/[^0-9.]/g, "") : "0";
-                const taxes = taxElement ? taxElement.innerText.replace(/[^0-9.]/g, "") : "0";
-                const shipping = shippingElement ? shippingElement.innerText.replace(/[^0-9.]/g, "") : "0";
-                const total = parseFloat(subtotal) + parseFloat(taxes) + parseFloat(shipping);
-
-                // Obtener dirección de envío (solo si el usuario ya ingresó su dirección)
-                const shippingAddress = {
-                    country: document.querySelector("select[name='country']")?.value || "",
-                    state: document.querySelector("select[name='state']")?.value || "",
-                    city: document.querySelector("input[name='city']")?.value || "",
-                    address: document.querySelector("input[name='address']")?.value || "",
-                    postalCode: document.querySelector("input[name='postalCode']")?.value || "",
-                };
-
-                const orderDetails = JSON.stringify({
-                    items: [
-                        { name: "Producto 1", price: 1000 }, 
-                        { name: "Producto 2", price: 2000 }
-                    ],
-                    subtotal: parseFloat(subtotal),
-                    taxes: parseFloat(taxes),
-                    shipping: parseFloat(shipping),
-                    total: parseFloat(total),
-                    shippingAddress: shippingAddress
+                const cartItems = Array.from(document.querySelectorAll(".cart-item")).map(item => {
+                    return {
+                        name: item.querySelector(".cart-item-name")?.innerText || "Producto",
+                        price: parseFloat(item.querySelector(".cart-item-price")?.innerText.replace(/[^0-9.]/g, "")) || 0,
+                        quantity: parseInt(item.querySelector(".cart-item-quantity")?.innerText) || 1
+                    };
                 });
 
-                console.log("🛒 Enviando a la app:", orderDetails);
+                const totalElement = document.querySelector(".totals__total-value");
+                const total = totalElement ? totalElement.innerText.replace(/[^0-9.]/g, "") : "0";
+
+                const orderDetails = JSON.stringify({
+                    items: cartItems,
+                    total: parseFloat(total)
+                });
+
                 window.location.href = `https://wayu.app/payment?data=${encodeURIComponent(orderDetails)}`;
             });
 
-            // Agregar botón debajo del checkout
             checkoutButton.parentNode.appendChild(paymentButton);
-            console.log("✅ Botón de pago con mi App agregado junto al de Shopify");
+            console.log("✅ Botón de pago agregado en el carrito");
         }
     });
 }
