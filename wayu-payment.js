@@ -9,14 +9,14 @@ function waitForElement(selector, callback) {
 
 if (window.location.pathname.includes("/cart")) {
     waitForElement("#checkout", function (checkoutButton) {
-        // Verifica si el botón ya fue reemplazado
+        // Verifica si el botón ya fue agregado para evitar duplicados
         if (!document.querySelector(".custom-payment-button")) {
             // Crear el nuevo botón
             const paymentButton = document.createElement("button");
             paymentButton.innerText = "Pagar con mi App";
             paymentButton.classList.add("custom-payment-button");
 
-            // Estilos del botón (opcional, puedes agregar Tailwind u otros estilos en CSS)
+            // Estilos del botón
             paymentButton.style.background = "black";
             paymentButton.style.color = "#fff";
             paymentButton.style.padding = "12px 20px";
@@ -44,11 +44,12 @@ if (window.location.pathname.includes("/cart")) {
                 window.location.href = `https://wayu.app/payment?data=${encodeURIComponent(orderDetails)}`;
             });
 
-            // Reemplazar el botón de checkout por el nuevo botón
-            checkoutButton.replaceWith(paymentButton);
-            console.log("✅ Botón de checkout reemplazado");
+            // Insertar el nuevo botón **debajo del botón de Shopify**
+            checkoutButton.parentNode.appendChild(paymentButton);
+
+            console.log("✅ Botón de pago con mi App agregado junto al de Shopify");
         } else {
-            console.log("⚠️ Botón ya reemplazado, no se vuelve a insertar.");
+            console.log("⚠️ Botón ya agregado, no se vuelve a insertar.");
         }
     });
 }
