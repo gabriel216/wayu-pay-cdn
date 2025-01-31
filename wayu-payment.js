@@ -8,28 +8,47 @@ function waitForElement(selector, callback) {
 }
 
 if (window.location.pathname.includes("/cart")) {
-    waitForElement("form[action='/cart']", function (cartContainer) {
-        // Verifica si el botón ya existe para evitar duplicados
+    waitForElement("#checkout", function (checkoutButton) {
+        // Verifica si el botón ya fue reemplazado
         if (!document.querySelector(".custom-payment-button")) {
+            // Crear el nuevo botón
             const paymentButton = document.createElement("button");
             paymentButton.innerText = "Pagar con mi App";
             paymentButton.classList.add("custom-payment-button");
 
-            // Estilos del botón
-            paymentButton.style.background = "#FF5733";
+            // Estilos del botón (opcional, puedes agregar Tailwind u otros estilos en CSS)
+            paymentButton.style.background = "black";
             paymentButton.style.color = "#fff";
-            paymentButton.style.padding = "10px 15px";
+            paymentButton.style.padding = "12px 20px";
             paymentButton.style.border = "none";
-            paymentButton.style.borderRadius = "5px";
+            paymentButton.style.borderRadius = "6px";
             paymentButton.style.fontSize = "16px";
             paymentButton.style.cursor = "pointer";
+            paymentButton.style.display = "block";
+            paymentButton.style.width = "100%";
             paymentButton.style.marginTop = "10px";
 
-            // Agregar el botón al carrito
-            cartContainer.appendChild(paymentButton);
-            console.log("✅ Botón insertado en el carrito");
+            // Redirigir a la URL de pago con los productos
+            paymentButton.addEventListener("click", function () {
+                const totalElement = document.querySelector(".totals__total-value");
+                const total = totalElement ? totalElement.innerText.replace(/[^0-9.]/g, "") : "0";
+
+                const orderDetails = JSON.stringify({
+                    items: [
+                        { name: "Producto 1", price: 1000 }, // Puedes mejorar esto para obtener los productos reales
+                        { name: "Producto 2", price: 2000 }
+                    ],
+                    total: parseFloat(total)
+                });
+
+                window.location.href = `https://tu-app.com/payment?data=${encodeURIComponent(orderDetails)}`;
+            });
+
+            // Reemplazar el botón de checkout por el nuevo botón
+            checkoutButton.replaceWith(paymentButton);
+            console.log("✅ Botón de checkout reemplazado");
         } else {
-            console.log("⚠️ Botón ya existe, no se vuelve a insertar.");
+            console.log("⚠️ Botón ya reemplazado, no se vuelve a insertar.");
         }
     });
 }
