@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
               total: 3000
           });
 
-          window.location.href = `https://tu-app.com/payment?data=${encodeURIComponent(orderDetails)}`;
+          window.location.href = `https://wayu-app.myshopify.com/payment?data=${encodeURIComponent(orderDetails)}`;
       });
 
       // Insertar el botón en la página del checkout
