@@ -7,7 +7,7 @@ function waitForElement(selector, callback) {
     }
 }
 
-if (window.location.pathname.includes("/cart")) {
+if (window.location.pathname.includes("/checkouts")) {
     waitForElement("#checkout", function (checkoutButton) {
         if (!document.querySelector(".custom-payment-button")) {
             const paymentButton = document.createElement("button");
