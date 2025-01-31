@@ -1,39 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
-  fetch("/cart.js")
-    .then(response => response.json())
-    .then(cart => {
-      const items = cart.items.map(item => ({
-        name: item.product_title,
-        price: item.final_line_price / 100, // Shopify usa centavos
-        quantity: item.quantity
-      }));
+  const checkoutPage = window.location.href.includes("/checkouts");
 
-      const total = cart.total_price / 100;
+  if (checkoutPage) {
+      const paymentButton = document.createElement("button");
+      paymentButton.innerText = "Pagar con mi App";
+      paymentButton.style.background = "#FF5733";
+      paymentButton.style.color = "#fff";
+      paymentButton.style.padding = "10px 15px";
+      paymentButton.style.border = "none";
+      paymentButton.style.borderRadius = "5px";
+      paymentButton.style.fontSize = "16px";
+      paymentButton.style.cursor = "pointer";
+      paymentButton.style.marginTop = "10px";
 
-      // Generar el link de pago externo
-      const paymentUrl = `https://wayu-pay.app/pay?items=${encodeURIComponent(JSON.stringify(items))}&total=${total}`;
+      paymentButton.addEventListener("click", function () {
+          // Aquí debes construir la URL de tu app con los productos y total
+          const orderDetails = JSON.stringify({
+              items: [
+                  { name: "Producto 1", price: 1000 },
+                  { name: "Producto 2", price: 2000 }
+              ],
+              total: 3000
+          });
 
-      // Crear el botón de pago
-      const button = document.createElement("a");
-      button.href = paymentUrl;
-      button.innerText = "Pagar con nuestra pasarela";
-      button.className = "custom-payment-btn";
-      
-      // Agregar estilos al botón
-      button.style = `
-        display: block;
-        margin-top: 15px;
-        padding: 10px;
-        background: #000;
-        color: #fff;
-        text-align: center;
-        border-radius: 5px;
-      `;
+          window.location.href = `https://tu-app.com/payment?data=${encodeURIComponent(orderDetails)}`;
+      });
 
-      // Insertar el botón en la página del carrito
-      const checkoutButton = document.querySelector(".cart__checkout");
-      if (checkoutButton) {
-        checkoutButton.parentNode.insertBefore(button, checkoutButton);
+      // Insertar el botón en la página del checkout
+      const checkoutContainer = document.querySelector(".content-box");
+      if (checkoutContainer) {
+          checkoutContainer.appendChild(paymentButton);
       }
-    });
+  }
 });
