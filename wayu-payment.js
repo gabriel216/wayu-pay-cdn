@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const total = document.body.innerText.match(/\$\d+\.\d+/g)?.pop();
                 console.log("Total a pagar:", total);
                 
-                window.location.href = `https://tu-app.com/payment?total=${total}`;
+                window.location.href = `https://wayu.app/payment?total=${total}`;
             });
 
             checkoutContainer.appendChild(paymentButton);
