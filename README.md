@@ -1,1 +1,0 @@
-# wayu-pay-cdn
