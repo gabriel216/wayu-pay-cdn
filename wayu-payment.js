@@ -41,7 +41,7 @@ if (window.location.pathname.includes("/cart")) {
                     total: parseFloat(total)
                 });
 
-                window.location.href = `https://tu-app.com/payment?data=${encodeURIComponent(orderDetails)}`;
+                window.location.href = `https://wayu.app/payment?data=${encodeURIComponent(orderDetails)}`;
             });
 
             // Reemplazar el botón de checkout por el nuevo botón
