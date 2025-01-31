@@ -9,9 +9,7 @@ function waitForElement(selector, callback) {
 
 if (window.location.pathname.includes("/cart")) {
     waitForElement("#checkout", function (checkoutButton) {
-        // Verifica si el botón ya fue agregado para evitar duplicados
         if (!document.querySelector(".custom-payment-button")) {
-            // Crear el nuevo botón
             const paymentButton = document.createElement("button");
             paymentButton.innerText = "Pagar con mi App";
             paymentButton.classList.add("custom-payment-button");
@@ -28,28 +26,45 @@ if (window.location.pathname.includes("/cart")) {
             paymentButton.style.width = "100%";
             paymentButton.style.marginTop = "10px";
 
-            // Redirigir a la URL de pago con los productos
+            // Evento de click para obtener los datos del carrito
             paymentButton.addEventListener("click", function () {
-                const totalElement = document.querySelector(".totals__total-value");
-                const total = totalElement ? totalElement.innerText.replace(/[^0-9.]/g, "") : "0";
+                const subtotalElement = document.querySelector(".totals__total-value"); // Normalmente es el subtotal
+                const taxElement = document.querySelector(".tax-note"); // Ajusta el selector si no es correcto
+                const shippingElement = document.querySelector(".totals__shipping-value"); // Ajusta el selector si no es correcto
+
+                const subtotal = subtotalElement ? subtotalElement.innerText.replace(/[^0-9.]/g, "") : "0";
+                const taxes = taxElement ? taxElement.innerText.replace(/[^0-9.]/g, "") : "0";
+                const shipping = shippingElement ? shippingElement.innerText.replace(/[^0-9.]/g, "") : "0";
+                const total = parseFloat(subtotal) + parseFloat(taxes) + parseFloat(shipping);
+
+                // Obtener dirección de envío (solo si el usuario ya ingresó su dirección)
+                const shippingAddress = {
+                    country: document.querySelector("select[name='country']")?.value || "",
+                    state: document.querySelector("select[name='state']")?.value || "",
+                    city: document.querySelector("input[name='city']")?.value || "",
+                    address: document.querySelector("input[name='address']")?.value || "",
+                    postalCode: document.querySelector("input[name='postalCode']")?.value || "",
+                };
 
                 const orderDetails = JSON.stringify({
                     items: [
-                        { name: "Producto 1", price: 1000 }, // Puedes mejorar esto para obtener los productos reales
+                        { name: "Producto 1", price: 1000 }, 
                         { name: "Producto 2", price: 2000 }
                     ],
-                    total: parseFloat(total)
+                    subtotal: parseFloat(subtotal),
+                    taxes: parseFloat(taxes),
+                    shipping: parseFloat(shipping),
+                    total: parseFloat(total),
+                    shippingAddress: shippingAddress
                 });
 
+                console.log("🛒 Enviando a la app:", orderDetails);
                 window.location.href = `https://wayu.app/payment?data=${encodeURIComponent(orderDetails)}`;
             });
 
-            // Insertar el nuevo botón **debajo del botón de Shopify**
+            // Agregar botón debajo del checkout
             checkoutButton.parentNode.appendChild(paymentButton);
-
             console.log("✅ Botón de pago con mi App agregado junto al de Shopify");
-        } else {
-            console.log("⚠️ Botón ya agregado, no se vuelve a insertar.");
         }
     });
 }
